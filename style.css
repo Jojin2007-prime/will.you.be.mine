@@ -1,0 +1,191 @@
+/* --- Base Styles & Romantic Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Custom romantic cursor */
+    cursor: url('https://cur.cursors-4u.net/symbols/sym-9/sym833.ani'), url('https://cur.cursors-4u.net/symbols/sym-9/sym833.png'), auto !important;
+}
+
+body {
+    background-color: #FFE4E8;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-image:
+        radial-gradient(circle at 15% 85%, #ffb3c1 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, #ff8fa3 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #fff0f3 0%, transparent 60%);
+}
+
+/* --- Falling Petals Animation --- */
+.petal {
+    position: fixed;
+    top: -10%;
+    z-index: 0;
+    pointer-events: none;
+    background: #ffb7c5;
+    border-radius: 150% 0 150% 0;
+    opacity: 0.7;
+    animation: falling 10s linear infinite;
+}
+
+@keyframes falling {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(100px, 110vh) rotate(360deg); }
+}
+
+/* Floating hearts background */
+.hearts-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.hearts-bg::before,
+.hearts-bg::after {
+    content: '💕 💗 💖 💝 💓';
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0.15;
+    animation: floatHearts 12s linear infinite;
+    white-space: nowrap;
+    top: 100%;
+    left: 10%;
+}
+
+.hearts-bg::after {
+    animation-delay: 6s;
+    left: 60%;
+    content: '💗 💕 💓 💖 💝';
+}
+
+@keyframes floatHearts {
+    from { transform: translateY(0); opacity: 0.15; }
+    to { transform: translateY(-110vh); opacity: 0; }
+}
+
+/* --- Romantic Glass Container --- */
+.container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 40px 30px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 15px 35px rgba(214, 51, 132, 0.15);
+}
+
+h1 {
+    font-size: 2.6rem;
+    color: #d63384;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: wiggle 2s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(-1deg) scale(1); }
+    50% { transform: rotate(1deg) scale(1.02); }
+}
+
+#cat-gif {
+    width: 220px;
+    height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(214, 51, 132, 0.3));
+    transition: opacity 0.3s ease;
+    border-radius: 20px;
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+/* --- Romantic Button Styling --- */
+#yes-btn {
+    background: linear-gradient(135deg, #ff4d6d, #ff758f);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.6rem;
+    font-weight: 900;
+    padding: 18px 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 20px rgba(255, 77, 109, 0.4);
+}
+
+#yes-btn:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 77, 109, 0.5);
+}
+
+#no-btn {
+    background: #fff;
+    color: #ff4d6d;
+    border: 2px solid #ff4d6d;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 12px 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#tease-toast {
+    margin-top: 14px;
+    font-size: 1rem;
+    color: #d63384;
+    font-weight: 700;
+    font-style: italic;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    min-height: 1.5rem;
+}
+
+#tease-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#music-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+/* Yes page specific logic */
+.yes-container h1.yes-title {
+    font-size: 3rem;
+    color: #ff0054;
+    animation: bounceTitle 0.6s ease infinite alternate;
+}
+
+@keyframes bounceTitle {
+    from { transform: translateY(0); }
+    to { transform: translateY(-15px); }
+}
