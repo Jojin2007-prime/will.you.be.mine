@@ -1,27 +1,31 @@
 let musicPlaying = true;
 
 window.addEventListener('load', () => {
-    // 1. Launch the confetti celebration
+    // 1. Launch the confetti celebration immediately
     launchConfetti();
 
-    // 2. Fix for Music Playback
+    // 2. Handle Music: Explicitly trigger play on load
     const music = document.getElementById('bg-music');
     if (music) {
         music.volume = 0.3;
         
-        // Attempt to play immediately
+        // This usually works because the user interacted with the previous page
         const playPromise = music.play();
 
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                // Playback started successfully
                 musicPlaying = true;
+                updateMusicButton(true);
             }).catch(error => {
-                console.log("Autoplay prevented. Music will start on first user interaction.");
-                // Fallback: If the browser still blocks it, play on the first click anywhere on the page
+                console.log("Autoplay blocked; waiting for first interaction on this page.");
+                musicPlaying = false;
+                updateMusicButton(false);
+                
+                // Fallback: Start music on the very first click on this specific page
                 document.addEventListener('click', () => {
                     music.play();
                     musicPlaying = true;
+                    updateMusicButton(true);
                 }, { once: true });
             });
         }
@@ -34,7 +38,7 @@ function launchConfetti() {
     const duration = 6000;
     const end = Date.now() + duration;
 
-    // Initial big burst in the center
+    // Initial big burst
     confetti({
         particleCount: 150,
         spread: 100,
@@ -42,7 +46,7 @@ function launchConfetti() {
         colors: colors
     });
 
-    // Continuous side cannons for a high-energy effect
+    // Continuous side cannons
     const interval = setInterval(() => {
         if (Date.now() > end) {
             clearInterval(interval);
@@ -67,18 +71,41 @@ function launchConfetti() {
     }, 300);
 }
 
-// Music toggle function for the final page
+// Music toggle function
 function toggleMusic() {
     const music = document.getElementById('bg-music');
-    const toggleBtn = document.getElementById('music-toggle');
+    if (!music) return;
     
     if (musicPlaying) {
         music.pause();
         musicPlaying = false;
-        if (toggleBtn) toggleBtn.textContent = '🔇';
+        updateMusicButton(false);
     } else {
         music.play();
         musicPlaying = true;
-        if (toggleBtn) toggleBtn.textContent = '🔊';
+        updateMusicButton(true);
     }
 }
+
+function updateMusicButton(isPlaying) {
+    const btn = document.getElementById('music-toggle');
+    if (btn) btn.textContent = isPlaying ? '🔊' : '🔇';
+}
+
+// Reuse the heart trail animation for the success page
+document.addEventListener('mousemove', function(e) {
+    const heart = document.createElement('span');
+    heart.innerHTML = '❤️';
+    heart.style.position = 'fixed';
+    heart.style.left = e.clientX + 'px';
+    heart.style.top = e.clientY + 'px';
+    heart.style.fontSize = '12px';
+    heart.style.pointerEvents = 'none';
+    heart.style.zIndex = '9999';
+    document.body.appendChild(heart);
+
+    heart.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px) scale(0)`, opacity: 0 }
+    ], { duration: 1000 }).onfinish = () => heart.remove();
+});

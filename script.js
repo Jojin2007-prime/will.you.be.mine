@@ -26,49 +26,64 @@ const yesTeasePokes = [
 let yesTeasedCount = 0;
 let noClickCount = 0;
 let runawayEnabled = false;
-let musicPlaying = true;
+let musicPlaying = false;
 
 const catGif = document.getElementById('cat-gif');
 const yesBtn = document.getElementById('yes-btn');
 const noBtn = document.getElementById('no-btn');
 const music = document.getElementById('bg-music');
 
-// --- 1. Refined Music Logic ---
-window.addEventListener('load', () => {
-    if (music) {
+// --- 1. Robust Music Logic (The "Handshake") ---
+function playMusic() {
+    if (music && music.paused) {
         music.volume = 0.3;
-        // Attempting to play immediately
         const playPromise = music.play();
-
+        
         if (playPromise !== undefined) {
             playPromise.then(() => {
                 musicPlaying = true;
+                updateMusicButton(true);
             }).catch(() => {
-                // Autoplay blocked: wait for first interaction anywhere on screen
-                document.addEventListener('click', () => {
-                    music.play();
-                    musicPlaying = true;
-                }, { once: true });
+                musicPlaying = false;
+                // Fallback: Play on the first click anywhere on the page
+                document.addEventListener('click', startMusicOnInteraction, { once: true });
             });
         }
     }
-});
+}
 
-function toggleMusic() {
-    if (musicPlaying) {
-        music.pause();
-        musicPlaying = false;
-        document.getElementById('music-toggle').textContent = '🔇';
-    } else {
+function startMusicOnInteraction() {
+    if (music && music.paused) {
         music.play();
         musicPlaying = true;
-        document.getElementById('music-toggle').textContent = '🔊';
+        updateMusicButton(true);
     }
 }
 
-// --- 2. Button Mechanics ---
+function toggleMusic() {
+    if (!music) return;
+    if (musicPlaying) {
+        music.pause();
+        musicPlaying = false;
+        updateMusicButton(false);
+    } else {
+        music.play();
+        musicPlaying = true;
+        updateMusicButton(true);
+    }
+}
+
+function updateMusicButton(isPlaying) {
+    const btn = document.getElementById('music-toggle');
+    if (btn) btn.textContent = isPlaying ? '🔊' : '🔇';
+}
+
+window.addEventListener('load', playMusic);
+
+// --- 2. Interaction Mechanics ---
 function handleYesClick() {
-    if (noBtn && !runawayEnabled) {
+    // Tease user if they try to skip the "No" button fun
+    if (noBtn && !runawayEnabled && noClickCount === 0) {
         const msg = yesTeasePokes[Math.min(yesTeasedCount, yesTeasePokes.length - 1)];
         yesTeasedCount++;
         showTeaseMessage(msg);
@@ -79,16 +94,27 @@ function handleYesClick() {
 
 function handleNoClick() {
     noClickCount++;
+    
+    // Update No button text
     const msgIndex = Math.min(noClickCount, noMessages.length - 1);
     noBtn.textContent = noMessages[msgIndex];
 
+    // Grow Yes Button
     const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-    yesBtn.style.fontSize = `${currentSize * 1.35}px`;
+    yesBtn.style.fontSize = `${currentSize * 1.3}px`;
     yesBtn.style.padding = `${Math.min(18 + noClickCount * 5, 60)}px ${Math.min(45 + noClickCount * 10, 120)}px`;
 
+    // Shrink No Button
+    if (noClickCount > 2) {
+        const currentNoSize = parseFloat(window.getComputedStyle(noBtn).fontSize);
+        noBtn.style.fontSize = `${Math.max(currentNoSize * 0.9, 10)}px`;
+    }
+
+    // Swap GIFs
     const gifIndex = Math.min(noClickCount, gifStages.length - 1);
     swapGif(gifStages[gifIndex]);
 
+    // Enable Runaway at 5 clicks
     if (noClickCount >= 5 && !runawayEnabled) {
         enableRunaway();
         runawayEnabled = true;
@@ -105,6 +131,7 @@ function swapGif(src) {
 }
 
 function enableRunaway() {
+    noBtn.style.position = 'fixed';
     noBtn.addEventListener('mouseover', runAway);
     noBtn.addEventListener('touchstart', runAway, { passive: true });
 }
@@ -113,10 +140,13 @@ function runAway() {
     const margin = 20;
     const maxX = window.innerWidth - noBtn.offsetWidth - margin;
     const maxY = window.innerHeight - noBtn.offsetHeight - margin;
-    noBtn.style.position = 'fixed';
-    noBtn.style.left = `${Math.random() * maxX + margin / 2}px`;
-    noBtn.style.top = `${Math.random() * maxY + margin / 2}px`;
-    noBtn.style.zIndex = '50';
+    
+    const randomX = Math.random() * maxX + margin / 2;
+    const randomY = Math.random() * maxY + margin / 2;
+
+    noBtn.style.left = `${randomX}px`;
+    noBtn.style.top = `${randomY}px`;
+    noBtn.style.zIndex = '100';
 }
 
 function showTeaseMessage(msg) {
@@ -130,18 +160,18 @@ function showTeaseMessage(msg) {
 
 // --- 3. Romantic Animations ---
 
-function createPetal() {
+// Falling Petals
+setInterval(() => {
     const petal = document.createElement('div');
     petal.classList.add('petal');
     petal.style.left = Math.random() * window.innerWidth + 'px';
-    petal.style.width = Math.random() * 15 + 10 + 'px';
-    petal.style.height = Math.random() * 15 + 10 + 'px';
+    petal.style.width = petal.style.height = Math.random() * 15 + 10 + 'px';
     petal.style.animationDuration = Math.random() * 5 + 5 + 's';
     document.body.appendChild(petal);
     setTimeout(() => petal.remove(), 10000);
-}
-setInterval(createPetal, 300);
+}, 400);
 
+// Heart Trail
 document.addEventListener('mousemove', function(e) {
     const heart = document.createElement('span');
     heart.innerHTML = '❤️';
