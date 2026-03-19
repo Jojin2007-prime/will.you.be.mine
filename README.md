@@ -22,8 +22,8 @@ This project was designed to be a unique and fun way to ask someone to be your V
 * **GitHub Pages** - Hosting
 
 ## 👤 Author
-**Developed by Jojin** * *Student at Model Polytechnic College Mattakkara*
-* *Passionate about Python, MERN Stack, and Robotics*
+**Developed by Jojin** * 
+
 
 ## 📝 How to Use
 1.  Clone this repository to your local machine.
